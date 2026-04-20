@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmaSmart Santa Eufemia - Kiosko Rural</title>
+    
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root { 
+            --verde: #27ae60; 
+            --verde-oscuro: #1e8449;
+            --dark: #2c3e50; 
+            --bg-claro: #f4f7f6;
+            --naranja: #e67e22;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            background: url('/static/img/fondo.jpg') no-repeat center center fixed; 
+            background-size: cover;
+        }
+
+        .overlay { 
+            background: rgba(255, 255, 255, 0.94); 
+            min-height: 100vh; 
+            padding: 20px; 
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: auto; 
+        }
+
+        /* Cabecera XXL */
+        header { 
+            text-align: center; 
+            padding: 30px; 
+            background: white; 
+            border-radius: 25px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-bottom: 8px solid var(--verde);
+        }
+
+        header img { width: 120px; margin-bottom: 10px; }
+        h1 { color: var(--verde); margin: 0; font-size: 3.5em; text-transform: uppercase; }
+        header p { color: #7f8c8d; font-size: 1.5em; margin-top: 10px; }
+
+        /* Carrito Flotante XXL (Botón muy grande para mayores) */
+        .cart-float { 
+            position: fixed; 
+            top: 25px; 
+            right: 25px; 
+            background: var(--naranja); 
+            color: white; 
+            padding: 25px 45px; 
+            border-radius: 60px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 1.8em;
+            z-index: 1000; 
+            box-shadow: 0 12px 20px rgba(230, 126, 34, 0.5);
+            border: 4px solid white;
+            transition: transform 0.2s;
+        }
+        .cart-float:active { transform: scale(0.9); }
+
+        /* Alerta de Stock */
+        .alerta-stock { 
+            background: #fff3cd; 
+            color: #856404; 
+            padding: 25px; 
+            border-radius: 20px; 
+            margin-bottom: 30px; 
+            font-weight: bold; 
+            text-align: center; 
+            border: 3px solid #ffeeba;
+            font-size: 1.3em;
+        }
+
+        /* Sección de Receta XXL */
+        .seccion-receta { 
+            background: var(--dark); 
+            color: white; 
+            padding: 40px; 
+            border-radius: 30px; 
+            text-align: center; 
+            margin-bottom: 50px; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+        }
+
+        .btn-scan { 
+            background: var(--verde); 
+            color: white; 
+            border: none; 
+            padding: 40px; 
+            font-size: 2.2em; 
+            border-radius: 80px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-weight: bold; 
+            box-shadow: 0 10px 0 var(--verde-oscuro);
+            transition: all 0.2s;
+        }
+        .btn-scan:active { transform: translateY(6px); box-shadow: 0 4px 0 var(--verde-oscuro); }
+
+        /* Grid de Productos XXL */
+        .grid-productos { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 40px; 
+            padding-bottom: 60px;
+        }
+
+        /* Tarjeta de Producto */
+        .card { 
+            background: white; 
+            border-radius: 30px; 
+            padding: 30px; 
+            text-align: center; 
+            border: 2px solid #eee; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-10px); }
+        .card img { width: 100%; height: 220px; object-fit: contain; margin-bottom: 20px; }
+        .card h3 { font-size: 1.8em; color: var(--dark); margin: 15px 0; min-height: 70px; }
+        .card .stock-label { font-weight: bold; font-size: 1.3em; margin-bottom: 25px; display: block; }
+
+        /* Botón Añadir XXL */
+        .btn-add { 
+            background: #3498db; 
+            color: white; 
+            padding: 25px; 
+            border-radius: 20px; 
+            text-decoration: none; 
+            display: block; 
+            font-weight: bold; 
+            font-size: 1.6em;
+            box-shadow: 0 6px 0 #2980b9;
+        }
+        .btn-add:active { transform: translateY(3px); box-shadow: 0 3px 0 #2980b9; }
+
+        #reader { width: 100%; margin-top: 25px; border-radius: 25px; overflow: hidden; border: 6px dashed var(--verde); background: #000; }
+
+        /* Responsive */
+        @media (max-width: 950px) { .grid-productos { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px) { 
+            .grid-productos { grid-template-columns: 1fr; } 
+            h1 { font-size: 2.5em; }
+            .cart-float { padding: 15px 25px; font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay">
+        <a href="/carrito" class="cart-float">
+            🛒 MI CESTA ({{ carrito_count }})
+        </a>
+
+        <div class="container">
+            <header>
+                <img src="/static/img/logo.png" alt="Logo">
+                <h1>FarmaSmart Santa Eufemia</h1>
+                <p><strong>ATENCIÓN AL MAYOR</strong> | Kiosko de Salud Rural</p>
+            </header>
+
+            {% if alertas %}
+            <div class="alerta-stock">
+                ⚠️ AVISO: Queda poco inventario de: {{ alertas|join(', ') }}
+            </div>
+            {% endif %}
+
+            <div class="seccion-receta">
+                <h2 style="font-size: 2.2em; margin-top:0;">🏥 TRAER MI RECETA</h2>
+                <p style="font-size: 1.5em; margin-bottom: 30px;">Pulse el botón verde y enseñe su tarjeta a la cámara</p>
+                <button class="btn-scan" onclick="startScan()">📷 ABRIR CÁMARA AQUÍ</button>
+                <div id="reader"></div>
+            </div>
+
+            <h2 style="color: var(--dark); border-left: 15px solid var(--verde); padding-left: 25px; font-size: 2.5em; margin-bottom: 40px;">
+                🛍️ COMPRAR OTROS PRODUCTOS
+            </h2>
+
+            <div class="grid-productos">
+                {% for p in libres %}
+                <div class="card">
+                    <img src="/static/img/{{ p.nombre.split(' ')[0].lower() }}.jpg" 
+                         onerror="this.src='/static/img/vendas.jpg'">
+                    <h3>{{ p.nombre }}</h3>
+                    <span class="stock-label" style="color: {{ 'red' if p.stock < 10 else '#27ae60' }}">
+                        Disponibles: {{ p.stock }} unidades
+                    </span>
+                    <a href="/add_carrito/{{ p.id }}" class="btn-add">🛒 AÑADIR A MI CESTA</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <form id="qr-form" action="/escanear" method="POST" style="display:none;">
+        <input type="hidden" name="qr_code" id="qr_input">
+    </form>
+
+    <script>
+        function startScan() {
+            const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 300 });
+            html5QrcodeScanner.render((decodedText) => {
+                document.getElementById('qr_input').value = decodedText;
+                document.getElementById('qr-form').submit();
+                html5QrcodeScanner.clear();
+            });
+        }
+    </script>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <script>
+          {% for category, message in messages %}
+            Swal.fire({
+              title: '{{ "¡Añadido!" if category == "success" else "Aviso" }}',
+              html: '<b style="font-size: 1.5em;">{{ message }}</b>',
+              icon: '{{ category }}',
+              timer: 8000,
+              timerProgressBar: true,
+              showConfirmButton: false,
+              backdrop: `rgba(39,174,96,0.2)`
+            });
+          {% endfor %}
+        </script>
+      {% endif %}
+    {% endwith %}
+
+</body>
+</html>
+

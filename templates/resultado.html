@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado - FarmaSmart</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            background: url('/static/img/fondo.jpg') no-repeat center center fixed; 
+            background-size: cover;
+        }
+        .overlay { 
+            background: rgba(255, 255, 255, 0.94); 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card-resultado { 
+            background: white; 
+            padding: 50px; 
+            border-radius: 40px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2); 
+            text-align: center; 
+            max-width: 850px; 
+            width: 100%;
+            border-top: 15px solid #27ae60;
+        }
+        h1 { font-size: 3.5em; color: #2c3e50; margin: 0 0 30px 0; }
+        .mensaje { font-size: 2.5em; line-height: 1.3; color: #34495e; margin-bottom: 40px; font-weight: 500; }
+        .med-img { 
+            width: 400px; 
+            max-width: 100%;
+            height: auto; 
+            object-fit: contain; 
+            margin-bottom: 30px; 
+            border: 8px solid #f8f9fa; 
+            border-radius: 30px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .btn-volver { 
+            display: inline-block; 
+            background: #27ae60; 
+            color: white; 
+            padding: 30px 60px; 
+            text-decoration: none; 
+            font-size: 2.2em; 
+            font-weight: bold; 
+            border-radius: 70px; 
+            box-shadow: 0 10px 0 #1e8449;
+            transition: all 0.2s;
+        }
+        .btn-volver:active { transform: translateY(6px); box-shadow: 0 4px 0 #1e8449; }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <div class="card-resultado">
+            <h1>SISTEMA FARMASMART</h1>
+            
+            {% if imagen %}
+            <img src="/static/img/{{ imagen }}" class="med-img" onerror="this.src='/static/img/vendas.jpg'">
+            {% endif %}
+            
+            <div class="mensaje">{{ mensaje }}</div>
+            
+            <a href="/" class="btn-volver">⬅️ VOLVER AL INICIO</a>
+        </div>
+    </div>
+</body>
+</html>
