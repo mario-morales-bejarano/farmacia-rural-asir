@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicorn instance to serve Farmacia Rural
+After=network.target mariadb.service
+
+[Service]
+User=farmacia-santaeufemia
+Group=www-data
+WorkingDirectory=/home/farmacia-santaeufemia/proyecto_farmacia
+Environment="PATH=/home/farmacia-santaeufemia/proyecto_farmacia/venv/bin"
+ExecStart=/home/farmacia-santaeufemia/proyecto_farmacia/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 app:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
